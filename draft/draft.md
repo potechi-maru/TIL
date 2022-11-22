@@ -499,3 +499,27 @@ DBに保存済みか確認できるメソッド
 trueなら保存済み
 
 --221120
+
+自分でバリデーションを作る
+モデルの中(もしくは参照先)にメソッドを定義する。
+def method_name
+  errors.add ...
+end
+errorsに自分で書いたエラーの定義を格納する。
+validate :method_name
+とバリデーションを定義する。
+validatesではなく、複数形ではないvalidate
+
+--221121
+
+findはnilに対してエラーを返す
+セッション切れになるとエラーになってしまうので
+find_byを使用する
+
+ぼっち演算子はレシーバがnilのときにエラーを出したくない場面で使用
+object.method
+objectが空(nil)の場合no method error for nilclass
+object&.method
+objectが空(nil)の場合"戻り値にnilを返すメソッド"になる
+
+--221122
