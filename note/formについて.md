@@ -25,4 +25,27 @@ name属性は変数ではないのでデータベースに保存する動作が�
 labelタグのfor属性と、inputタグのid属性を同一にすることで
 inputタグにつけるlabelを指定することができる。  
 
--20221008
+## form_withから生成されるformタグのname属性について  
+https://qiita.com/aimaimi/items/ddba89111e2e604130cc  
+https://railsdoc.com/page/form_with  
+
+指定しない場合は自動生成される。
+action属性にurlのみを指定すると`:hoge`なら`name="hoge", id="hoge"`になる。  
+その他モデルやスコープの指定をしている場合は、
+`name="model[hoge]", id="model_hoge"`のようになる。  
+
+## authenticity_tokenについて
+https://takkuso.hatenablog.com/entry/2019/03/18/224252  
+https://tech-essentials.work/course_outputs/201  
+CSRF対策用の自動生成トークン。 
+CSRFについては別ページのnoteあり。  
+フォームのあるページを開くと自動で生成される。リロードすると変わる。  
+生成し、セッションに保存してフォームに隠す。(`input type="hiden"`)  
+フォームが送信されるとセッションに保存されたトークンと
+送信されたトークンが一致するか確認する。  
+一致すればフォームの内容を正しく扱う。  
+ユーザーや開発者が意図した通りにという意味で。  
+データベースに保存したり表示したり。  
+
+
+-20221008, 20221125, 20221126

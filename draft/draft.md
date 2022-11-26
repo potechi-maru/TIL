@@ -523,3 +523,38 @@ object&.method
 objectが空(nil)の場合"戻り値にnilを返すメソッド"になる
 
 --221122
+
+Oopsエラー curlコマンドのみ
+https://qiita.com/atsushi101011/items/c0cc54261ab2f3a7c22c
+https://blog.proglus.jp/3893/#VFS_connection_does_not_exist
+
+デバッグしながらparamsの中身を確認
+form_withがどんなformタグを生成するのか確認
+
+<%= form_with model: task, local: true do |f| %>
+  <div class='form-group'>
+    <%= f.label :name %>
+    <%= f.text_field :name, class: 'form-control', id: 'task_name' %>
+  </div>
+  <div class='form-group'>
+    <%= f.label :description %>
+    <%= f.text_area :description, rows: 5, class: 'form-control', id: 'task_description' %>
+  </div>
+  <%= f.submit nil, class: 'btn btn-primary' %>
+<% end %>
+
+<form action="/tasks" accept-charset="UTF-8" method="post"> # <input name="utf8" type="hidden" value="✓"><input type="hidden" name="authenticity_token" value="gQx/zPVkSyn3Sq3p02zM5VQvJwR/mrhKv/KLiWSeHk9ed/iPb56rjoYnIbB852P5vh0p9qNSn+H25fu5oRKDog==">
+  <div class="form-group">
+    <label for="task_name">Name</label>
+    <input class="form-control" id="task_name" type="text" name="task[name]">
+    for = input id
+    model[input name]
+  </div>
+  <div class="form-group">
+    <label for="task_description">Description</label>
+    <textarea rows="5" class="form-control" id="task_description" name="task[description]"></textarea>
+  </div>
+  <input type="submit" name="commit" value="Create Task" class="btn btn-primary" data-disable-with="Create Task">
+</form>
+
+--20221125, 1126
