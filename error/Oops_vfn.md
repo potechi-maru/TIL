@@ -77,3 +77,13 @@ $ curl -X POST -F 'article[title]=hoge' -F 'article[content]=fuga' https://41287
 ## 参考URL
 https://qiita.com/atsushi101011/items/c0cc54261ab2f3a7c22c  
 https://teratail.com/questions/124827  
+
+VFS connection does not existのエラー対処を端から試すも効果なし。  
+そもそもプレビューではきちんと表示されており、
+curlで取得しようとするとエラーのHTMLが返ってくるので
+違ったケースかなと。  
+Postmanで試してもcurl打ったときと同じ。  
+それっぽい情報のサイトも見つからないので
+深追いせずCloud9から実行するのはあきらめた。  
+
+--20221125, 20221126, 20221127
