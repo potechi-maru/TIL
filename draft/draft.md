@@ -53,3 +53,28 @@ P109
 
 adminのログイン画面が必要
 /view/users/admin/login.html.erb かな
+
+--1127
+
+CGI
+URI
+Uniform Resource Identifier
+URLとURNの総称
+URLは
+Uniform Resource Locator
+URN
+Uniform Resource Name
+https://qiita.com/Zuishin/items/3bd56117ab08ec2ec818
+
+
+フォームのPOSTメソッドならルーティングでPOST＋formactionの同じURIを参照する？
+
+--1128
+
+フォーム
+フォームとHTTPリクエストは別物だと思っていた。
+フォームタグで指定したURLにフォームタグで指定したHTTPリクエストメソッドが
+送られるHTTPリクエストが発生したときに、
+HTTPリクエストにくっつくのがフォームの入力内容（パラメーター）
+
+--1130
