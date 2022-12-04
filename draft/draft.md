@@ -55,3 +55,32 @@ adminのログイン画面が必要
 /view/users/admin/login.html.erb かな
 
 --1127
+
+form_withのモデル属性？の話
+model: Task.new だとeditアクションにしても新しく作る以外ない newしちゃう
+model: @taskでもいいけど推奨ではない
+model: task これが良いtaskはviewのrenderのパーシャルと一緒に引数にしてるやつ
+ローカル変数的な
+`render (partial: form　task: @task)`
+formでしか使えない変数にしている
+影響が及ぶ範囲を小さくしてる デバッグの時とか使用変更の時とか楽
+
+POST /posts　は新規登録の時だけ　IDがまだないから
+IDの付与はただ登録された順番 削除されて歯抜けになっても
+新しいレコードはそこに入り込まない
+
+name属性task[name]
+paramsの中でauthenticity_tokenやらなんやらとユーザーが入力した情報を分けたい。
+taskという分類でハッシュ？になりその中でさらにキーnameが作られる
+Params {authenticity_token, task:{name: } }みたいな
+ラベリングしたいだけなのでラベルは何でもよい
+form_for的な使い方の場合はモデルに関連しないのでラべリングは必要ない
+
+byebug
+binding.pry
+処理を止めたいときは入れる
+止まらなかったときは仕込む場所が違う （処理の道としてそこを踏んでいない）
+変なところ（コールバックなど）にいったら一回終わらせて
+手動で仕込む場所をずらしてみる
+
+--221204

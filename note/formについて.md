@@ -25,14 +25,37 @@ name属性は変数ではないのでデータベースに保存する動作が�
 labelタグのfor属性と、inputタグのid属性を同一にすることで
 inputタグにつけるlabelを指定することができる。  
 
-## form_withから生成されるformタグのname属性について  
+## form_withから生成されるinputタグのname属性について  
 https://qiita.com/aimaimi/items/ddba89111e2e604130cc  
 https://railsdoc.com/page/form_with  
 
 指定しない場合は自動生成される。
 action属性にurlのみを指定すると`:hoge`なら`name="hoge", id="hoge"`になる。  
 その他モデルやスコープの指定をしている場合は、
-`name="model[hoge]", id="model_hoge"`のようになる。  
+`name="model[hoge]", id="model_hoge"`のようになる。 
+モデル[シンボル]のような感じ。  
+
+## form_withを理解する
+form_withはインスタンス変数が空かどうかでaction属性を振り分ける。  
+レコードが新しいかどうかをrecord.persisted?で識別するらしい。  
+form_withののちにaction属性に代わる部分が空かどうか。  
+そのページを表示するにあたり踏んできたアクションの中でセットされているかどうか。  
+https://qiita.com/okonomi/items/6c2b31427161090c173a 
+
+## paramsについて
+### form_for的な使い方
+関連するモデルがない場合(form_withの時点でURL指定する場合)  
+`params[:email]`で取得する。  
+ストロングパラメータ(フォームから受け取る内容を決めるやつ)は
+`params.permit(:email)`で指定できる。  
+### form_with的な使い方
+関連するモデルがある場合(form_withの時点で`model: @user`の場合)  
+`params[:user][:email]`で取得する。  
+ストロングパラメータは
+`paramas.requie(:user).permit(:email)`で指定できる。  
+階層構造にする必要がある。モデルを一回挟む。というか指定する感じ。  
+
+https://qiita.com/snskOgata/items/44d32a06045e6a52d11c  
 
 ## authenticity_tokenについて
 https://takkuso.hatenablog.com/entry/2019/03/18/224252  
@@ -48,7 +71,8 @@ CSRFについては別ページのnoteあり。
 データベースに保存したり表示したり。  
 
 
--20221008, 20221125, 20221126
+
+--20221008, 20221125, 20221126, 20221203
 
 ---
 
@@ -63,14 +87,16 @@ CSRFについては別ページのnoteあり。
 * action属性があり、フォームから送るデータを送信したいURLを指定する
 * method属性があり、HTTPリクエストのメソッドを指定する
 * GETならURLに入力内容が含まれる
-* POSTなら入力内容はリクエストボディに含まれる
-誤って認識していたこと
+* POSTなら入力内容はリクエストボディに含まれる  
+### 誤って認識していたこと
 * 入力してsubmitすると送信されるけどルーティングとは関係ない
 * HTTPリクエストとは別の独自の送信をする
 * action属性もmethod属性もフォーム独自のもの
 
 ルーティングとは関係ないと思っていたのでaction属性のページに向けて、
-GETもしくはPOSTを使って独自に送信していると思っていた。
+GETもしくはPOSTを使って独自に送信していると思っていた。  
+action属性で指定したURLのページに透明な領域があり、
+そこがフォームを受け取る専用だと思っていた。  
 単なるHTTPリクエストのGET/POSTとは別に、
 フォーム独自の送信方法としてGET/POSTがあると思っていた。
 書いていて自分でも意味がわからないがこれ以上説明できない。
@@ -88,11 +114,7 @@ HTTPリクエストにくっつくのがフォームの入力内容（パラメ�
 https://dev-lib.com/http-request-response/  
 
 これも知らなかったわけではないが頭の中になかった。
-フォームのaction属性とmethod属性がフォーム独自のものと切り離して考えていたため。
-
-## form_withを理解する
-form_withはインスタンス変数が空かどうかでaction属性を振り分ける。  
-レコードが新しいかどうかをrecord.persisted?で識別します
+フォームのaction属性とmethod属性がフォーム独自のものと切り離して考えていたため。  
 
 
 ## まとめ
