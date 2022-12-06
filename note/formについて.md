@@ -35,6 +35,17 @@ action属性にurlのみを指定すると`:hoge`なら`name="hoge", id="hoge"`�
 `name="model[hoge]", id="model_hoge"`のようになる。 
 モデル[シンボル]のような感じ。  
 
+## form_withのモデル属性？について
+`model: Task.new`だとeditアクションにしても新しく作る以外できない。newしちゃう。
+`model: @task`でもいいけど推奨ではない。  
+`model: task`これが一番良い多分。
+    taskはviewのrenderのパーシャルと一緒に引数にしてるやつ。
+    ローカル変数的な。
+    `render (partial: form　task: @task)`
+    formでしか使えない変数にしている。
+    影響が及ぶ範囲を小さくしてる。
+    デバッグの時とか使用変更の時とか楽だし意図しない動作を多分減らせる。  
+
 ## form_withを理解する
 form_withはインスタンス変数が空かどうかでaction属性を振り分ける。  
 レコードが新しいかどうかをrecord.persisted?で識別するらしい。  
@@ -54,8 +65,14 @@ https://qiita.com/okonomi/items/6c2b31427161090c173a
 ストロングパラメータは
 `paramas.requie(:user).permit(:email)`で指定できる。  
 階層構造にする必要がある。モデルを一回挟む。というか指定する感じ。  
-
 https://qiita.com/snskOgata/items/44d32a06045e6a52d11c  
+### name属性task[name]
+paramsの中でauthenticity_tokenやらなんやらとユーザーが入力した情報を分けたい。  
+taskという分類でハッシュ？になりその中でさらにキーnameが作られる。  
+Params {authenticity_token, task:{name: } }みたいな感じの。  
+ラベリングしたいだけなのでラベルは何でもよい。でたらめでも動く。  
+ただRailsが自動でつくると`モデル名[フォームデータ名]`みたいになる。  
+form_for的な使い方の場合はモデルに関連しないのでラべリングは必要ない。  
 
 ## authenticity_tokenについて
 https://takkuso.hatenablog.com/entry/2019/03/18/224252  
