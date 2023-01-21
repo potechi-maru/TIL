@@ -115,7 +115,53 @@ https://nanairo-taiyou.com/rails_error_bcrypt20200420/
 railsconsoleで
 app.名前付きパス
 
+userがnil
+createしてもrendernewされてるから作れてなさそう
 
-46分まで見た
+binding.pry
+@user
+=> #<User:0x00007fdaa8943f38
+ id: nil,
+ name: "passpass",
+ email: "pass@pass.com",
+ password_digest: "[FILTERED]",
+ admin: false,
+ created_at: nil,
+ updated_at: nil>
 
 --1231
+
+
+46分
+
+IDとViewの不一致
+
+end忘れたときの×が出ないー＞インスタンスの停止、起動で治った
+
+redirect_to question_path(@question), success: '質問を作成しました'
+        # flash[:success] = '質問を作成しました'　でも良い。
+        # redirect_toの第二引数にできるflashのキーはデフォルトで決められているので
+        # application_controllerにadd_flash_types :success, :info, :warning, :dangerを追加
+        # successを使えるようにした
+
+
+問題
+
+URLのIDを何にしても/questions/:id  の内容がid:1のquestionになってしまう。
+サーバー再起動済み。
+/questions/:id/editは正常。
+編集後のリダイレクトでは上記の問題が起こる。
+直リンも同様なのでeditアクションではなく
+showアクションかshow.html.erbあたりの問題か。
+おそらく@questionの中身がうまく動いていない。
+routesを間違えた？
+=> Question.findをQuestion.find_byにしていた。
+  findはデータを複数取得できます。
+  find_byは最初にマッチした1件のみ取得できます。
+  とあるように最初の1件しか取得できなかったので
+  id:1のものしか表示されなかった。
+  
+
+デフォルトのbootstrap多すぎてポートフォリオではやめたほうがよい
+使うならカスタムしたbootstrap
+どっかからとってきたな～という感じがしなければ
