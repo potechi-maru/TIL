@@ -7,9 +7,6 @@ P109
 
 ４章までやる　５章以降はいったん飛ばす
 
-無理してフロントとバックエンドを分けるのはめちゃくちゃ大変だからむりせず
-ポートフォリオの話
-
 ---
 
 --1127
@@ -132,7 +129,6 @@ binding.pry
 --1231
 
 
-46分
 
 IDとViewの不一致
 
@@ -162,6 +158,77 @@ routesを間違えた？
   id:1のものしか表示されなかった。
   
 
-デフォルトのbootstrap多すぎてポートフォリオではやめたほうがよい
-使うならカスタムしたbootstrap
-どっかからとってきたな～という感じがしなければ
+●7分あたりのform_withのモデルの説明きく
+answerを作るフォームでは、form_withのmodel部分に
+配列形式でquestionの情報を与える必要がある。
+answerはquestionありきのものとして実装しているため、
+form_withが自動生成するformタグのURLがうまく作られない。  
+
+●11分あたりのcreateアクションのコード説明きく
+answersコントローラのcreateアクションにて。
+```
+@answer = current_user.answers.build(answer_params)
+# 上記だとquestionの情報を拾えていないので下記も合わせる必要がある
+@answer.question_id = params[:question_id]
+```
+↑だと2つのコードが必要
+```
+@answer = current_user.answers.build(
+      answer_params.merge(question_id: params[:question_id]))
+```
+このようにして1つのコードにすることができる。
+ハッシュをマージしている。
+`answer_params`アクションの戻り値になっているハッシュに
+`question_id`のハッシュを追加している。多分。
+
+●55分あたりの解決済みにするボタン
+
+
+検索機能にransack便利
+
+https://qiita.com/hirokihello/items/fa82863ab10a3052d2ff
+resourcesにcollectionをネストする
+resourcesで自動生成されるもの以外のルーティングを指定したいときに。
+:idが必要なルーティングを指定するときはmember
+必要ないときはcollection
+
+https://qiita.com/nakachan1994/items/72f0fd1cf8193cca8188
+No Ransack::Search object was provided to search_form_for!
+というArgumentErrorが出た
+before_actionにして解消
+
+55分経過
+
+解決済みにするボタンまわりでエラー
+
+```
+ActiveRecord::RecordNotFound in QuestionsController#solve
+Couldn't find Question with 'id'=1 [WHERE "questions"."user_id" = ?]
+```
+```
+def solve 
+    @question = current_user.questions.find(params[:id])
+    @question.update!(solved: true)
+    redirect_to question_path(@question), success: '解決済みにしました'
+  end
+```
+paramsのとこ間違えてたので修正
+```
+ActiveRecord::RecordNotFound in QuestionsController#solve
+Couldn't find Question without an ID
+```
+```
+  def solve 
+    @question = current_user.questions.find(params[:question_id])
+    @question.update!(solved: true)
+    redirect_to question_path(@question), success: '解決済みにしました'
+  end
+```
+IDのないquestionを探しに行っちゃったらしい
+ルーティング確認
+```
+solve_question POST   /questions/:id/solve(.:format) questions#solve
+```
+コード間違えてない？
+そもそもこのparamsって何をさしてる？
+[WHERE "questions"."user_id" = ?]これなに？
