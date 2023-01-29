@@ -168,7 +168,7 @@ form_withが自動生成するformタグのURLがうまく作られない。
 answersコントローラのcreateアクションにて。
 ```
 @answer = current_user.answers.build(answer_params)
-# 上記だとquestionの情報を拾えていないので下記も合わせる必要がある
+# 上記だとquestionの情報を拾えていないので下記が必要
 @answer.question_id = params[:question_id]
 ```
 ↑だと2つのコードが必要
@@ -232,3 +232,223 @@ solve_question POST   /questions/:id/solve(.:format) questions#solve
 コード間違えてない？
 そもそもこのparamsって何をさしてる？
 [WHERE "questions"."user_id" = ?]これなに？
+書き直したらいけたなぜか
+
+enumとは
+
+
+ActiveRecord::RecordNotFound in QuestionsController#show
+Couldn't find Question with 'id'=users
+  def show
+    @question = Question.find(params[:id])
+  end
+プレビューの直リンクを打ち間違えていたわら
+
+indexページのレンダリングはeach文ではなくパーシャルを作った方が
+パフォーマンスも良い
+```
+<% @users.each do |user| %>
+  <%= user.name %>
+<% end %>
+```
+これを変える
+`_user.html.erb`のようにモデル名（単数）で名前づけ
+```
+<%= user.name %>
+# ここの変数も単数
+```
+```
+index.html.erb
+  <%= render @users %>
+  # ここは複数に
+```
+
+adminLTEというフレームワーク使うと管理画面いい感じに作れる
+
+
+
+$ yarn add admin-lte@^3.2
+yarn add v1.22.19
+warning ../../../package.json: No license field
+[1/4] Resolving packages...
+warning admin-lte > flag-icon-css@4.1.7: The project has been renamed to flag-icons
+warning admin-lte > popper.js@1.16.1: You can find the new Popper v2 at @popperjs/core, this package is dedicated to the legacy v1
+warning admin-lte > bootstrap-colorpicker > popper.js@1.16.1: You can find the new Popper v2 at @popperjs/core, this package is dedicated to the legacy v1
+warning admin-lte > tempusdominus-bootstrap-4 > popper.js@1.16.1: You can find the new Popper v2 at @popperjs/core, this package is dedicated to the legacy v1
+warning admin-lte > pdfmake > @foliojs-fork/linebreak > brfs > static-module > magic-string > sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead
+[2/4] Fetching packages...
+[3/4] Linking dependencies...
+warning "admin-lte > bootstrap-switch@3.3.4" has incorrect peer dependency "bootstrap@^3.1.1".
+warning "admin-lte > tempusdominus-bootstrap-4@5.39.2" has unmet peer dependency "moment-timezone@^0.5.31".
+warning "admin-lte > tempusdominus-bootstrap-4@5.39.2" has unmet peer dependency "tempusdominus-core@5.19.3".
+[4/4] Building fresh packages...
+success Saved lockfile.
+success Saved 126 new dependencies.
+info Direct dependencies
+└─ admin-lte@3.2.0
+info All dependencies
+以下略
+
+@popperjs/core で新しい Popper v2 を見つけることができます。このパッケージはレガシー v1 専用です。
+
+
+管理画面作り
+ルーティング
+```
+namespace :admin do
+  resources :users, only: [:index]
+end
+```
+コントローラ
+```
+rails g controller admin/users
+```
+管理画面に共通する処理をまとめるコントローラ
+```
+rails g controller admin/base
+```
+base以外のadminコントローラは継承をAdmin::Baseに変える
+```
+class Admin::UsersController < ApplicationController
+end
+↓
+class Admin::UsersController < Admin::BaseController
+end
+```
+adminの共通ビュー設定を作る
+1. `views/admin/layouts`を作る
+2. その中に`application.html.erb`を作る
+3. もう一つの`application.html.erb`の中身を一旦コピペする
+4. 管理画面とわかる文字を表示させる用に編集する
+4. `base_controller.rb`に`layout 'admin/layouts/application'`と記載する
+5. 反映されているか確認
+6. 管理画面用に編集する
+
+adminLTE yarnでも入れたしCDNでも入れてる？片方で良いのかな
+yarnで入れたの消す
+$ yarn remove adminLTE
+yarn remove v1.22.19
+warning ../../../package.json: No license field
+[1/2] Removing module adminLTE...
+error This module isn't specified in a package.json file.
+
+そもそも入ってないこともあるとのこと
+https://mebee.info/2021/09/29/post-32224/
+
+install打つ時のスペルを確認して挑戦
+$ yarn remove admin-lte
+yarn remove v1.22.19
+warning ../../../package.json: No license field
+[1/2] Removing module admin-lte...
+[2/2] Regenerating lockfile and installing missing dependencies...
+success Uninstalled packages.
+Done in 8.71s.
+
+
+link_toがうまく機能しない。動画50分あたり
+confirmも出ないしメソッドもGETになっちゃう。
+UJSが読み込めてないらしい
+```
+<%= csrf_meta_tags %>
+<%= csp_meta_tag %>
+
+<%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+<%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+```
+これらが`admin/application.html.erb`にはなかったので、
+adminではない`application.html.erb`からコピペする。
+# assetを分ける
+管理画面とそうでない画面でassetを違うものにした方が良い。
+## リンクタグ書き換え
+`admin/application.html.erb`内、
+リンクタグの参照が`application`だと管理画面以外のページと同じもののため
+バッティングする可能性がある。書き換える。
+```
+<%= stylesheet_link_tag 'admin/application', media: 'all', 'data-turbolinks-track': 'reload' %>
+```
+## リンクタグのassetを作る
+`app/assets/stylesheets/admin`に`application.scss`を作る。
+## コンパイルのため明示する
+自分で作ったcssはコンパイルしてくれないので明示する。
+`config/initializers/assets.rb` 最後の行コメントアウトを解除して編集
+scssでもここの記載はcssにしないとプリコンパイルエラーになる
+```
+Rails.application.config.assets.precompile += %w( admin/application.css )
+```
+## パックタグ書き換え
+パックタグの参照も同様にバッティングを避ける。書き換える。
+```
+<%= javascript_pack_tag 'admin/application', 'data-turbolinks-track': 'reload' %>
+```
+## パックタグのassetを作る
+`javascript/packs/admin/application.js`を作る。
+`packs/application.js`の内容をコピペ。
+## 確認
+開発者ツールでheadタグ内を見る
+```
+<link rel="stylesheet" media="all" href="/assets/admin/application.debug-bfc(省略).css" data-turbolinks-track="reload">
+<script src="/packs/js/admin/application-27bc614c1a515db502f3.js" data-turbolinks-track="reload"></script>
+```
+それぞれadminを参照できていることが確認できる。
+コンパイルされたあとのファイルは`public/packs/js`内に保存される。
+railsはここにあるファイルを読み込んでいる。
+
+ノンデザイナーズデザインブック
+
+管理画面ログインページ
+ログイン前なのにサイドバーが表示されている
+* ログイン画面用のレイアウトファイルを作る
+* レイアウトファイルを使わない
+どちらかで対処する
+# レイアウトファイル(application.html.erb)を使わない場合
+## admin/sessions_controllerに記載
+```
+layout false
+```
+### ビューファイルにテンプレートを流し込む
+`admin/sessions/new.html.erb`はadminLTEのログインページ用を
+コピペした。
+## headタグをコピペする
+`admin/application.html.erb`のheadタグ内、
+linkタグやscriptタグをコピーして
+`admin/sessions/new.html.erb`の同じ部分に置き換える
+
+# placeholder
+フォームに入ってる薄い文字のこと
+フォームタグなら`placeholder="Email`、
+form_withなら`placeholder: 'Email'`
+
+
+起きてる問題
+ログインしている状態で新しいユーザーを作ったら
+リダイレクトがUsers#new
+flashは新しいユーザー名
+ヘッダーのログイン名は前のユーザー
+def require_admin
+  redirect_to root_path unless current_user.admin?
+end
+未ログイン状態で/admin/loginにアクセスすると
+current_userがnilのためエラーになる
+管理画面のログインフォームが正常に機能していない。
+パスワード、メアドあっているのにログイン画面にリダイレクトする。
+管理者が普通のログイン状態を保持したまま/admin/users等にアクセスかのう。
+管理者ログインせず。
+userはnilになってしまうパスワードが違うのか？なんだろう
+form_with内、inputタグのname属性になる部分が誤っていた。
+<%= f.password_field :email, class: 'form-control', placeholder: 'Password' %>
+になっていて、パスワードなのにemailとなっていた。コピペ後の直し忘れ。
+password_fieldに入力した方のemailからfind_byしていたのか、
+２つのemailでfind_byしていたのかはわからない。
+
+
+2356まで見た
+
+管理者ログアウトするボタンないが、
+検証ツールからcookieを削除すると
+セッションが消される。
+セッションは設定をいじっていないからcookieに保存されている。
+検証ツール/application/cookie
+cloud9はAWSのクッキーも消えてサーバー終了してしまうので
+それだと思うのを一つ選んで消す。なんちゃら_sessionというやつ
+ローカル環境なら全部消してもOK
