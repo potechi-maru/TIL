@@ -441,9 +441,6 @@ form_with内、inputタグのname属性になる部分が誤っていた。
 password_fieldに入力した方のemailからfind_byしていたのか、
 ２つのemailでfind_byしていたのかはわからない。
 
-
-2356まで見た
-
 管理者ログアウトするボタンないが、
 検証ツールからcookieを削除すると
 セッションが消される。
@@ -452,3 +449,12 @@ password_fieldに入力した方のemailからfind_byしていたのか、
 cloud9はAWSのクッキーも消えてサーバー終了してしまうので
 それだと思うのを一つ選んで消す。なんちゃら_sessionというやつ
 ローカル環境なら全部消してもOK
+
+未解決、解決のそれぞれで検索を掛けられるようにしたい
+今は検索しても全てになってしまう
+solved actionでsolved: trueをransackの検索フォームにセットしたい
+form_withにurl: request.pathを追加し動いた
+
+requestとは？
+
+33分まで見た
