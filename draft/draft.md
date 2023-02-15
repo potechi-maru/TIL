@@ -242,7 +242,7 @@ Couldn't find Question with 'id'=users
   def show
     @question = Question.find(params[:id])
   end
-プレビューの直リンクを打ち間違えていたわら
+プレビューのリンクを打ち間違えていたわら
 
 indexページのレンダリングはeach文ではなくパーシャルを作った方が
 パフォーマンスも良い
@@ -457,4 +457,60 @@ form_withにurl: request.pathを追加し動いた
 
 requestとは？
 
-33分まで見た
+
+An error occurred while loading ./spec/views/sessions/new.html.erb_spec.rb.
+Failure/Error: config.include FactoryBot::Syntax::Methods
+
+NameError:
+  uninitialized constant FactoryBot
+# ./spec/rails_helper.rb:64:in `block in <main>'
+# ./spec/rails_helper.rb:33:in `<main>'
+
+https://qiita.com/aoi1019m/items/5e5701ba05629e2367a8
+gemfile内の`gem 'factory_bot_rails'`を
+`group :development, :test do`の中に移動させる
+
+
+rspec
+仕様書のように書ける
+現場Rails5章を読んで
+テストケースを整理・分類する：describe, context
+テストコードを実行する：before, it
+## describe
+contextはdescribeのエイリアスなので、どちらを使っても同じように動作する
+beforeはitが実行されるたびに新たに実行される
+だからあるテストケースのせいで別のテストケースが影響を受けることは基本ない
+
+contextで場合分けする
+
+
+describeはネストすることもあり、見出しを作るイメージ
+大外はdescribe
+
+answers_ctrlとquestions_ctrlのメイラー
+
+
+scope :related_to_question, ->(question) 
+        { joins(:answers).where(answers: { question_id: question.id }) }
+使用例
+User.related_to_question(@answer.question)
+愚直に書くと
+User.joins(:answers).where(answers: { question_id: @question.id })
+
+UserにanswersテーブルをJOINする。
+どんなデータを？→
+User.answersは、answersテーブルを結合する。
+where(answers: { question_id: @question.id })は、
+@questionのIDが解答のquestionIDと同じである解答を探す
+
+
+環境構築やる
+無変換もしくは変換取り消しやり方
+最小化最大化
+画面の分割
+選択もう一回押すのやめたい
+Docker
+
+
+Docker説明
+https://qiita.com/k5n/items/2212b87feac5ebc33ecb
